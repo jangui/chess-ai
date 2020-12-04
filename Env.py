@@ -13,7 +13,7 @@ class Env:
         # move piece
         # if moving pawn to backrank, promote
         piece = str(self.board.piece_at(action[0])).lower()
-        if (action[1] == 0 or action[1] == 7) and piece == 'p':
+        if (action[1] // 8 == 0 or action[1] // 8 == 7) and piece == 'p':
             move = chess.Move(action[0], action[1], promotion=chess.QUEEN)
         else:
             move = chess.Move(action[0], action[1])
@@ -24,12 +24,12 @@ class Env:
 
         # if invalid, end game and negative reward
         if not valid:
-            print("ILLEGAL MOVE", chess.SQUARE_NAMES[action[0]], chess.SQUARE_NAMES[action[1]])
+            print("ILLEGAL MOVE", chess.SQUARE_NAMES[action[0]], chess.SQUARE_NAMES[action[1]], "move:", self.board.fullmove_number)
             print(action[0],action[1])
             if turn:
-                reward = -9999
+                reward = -1
             else:
-                reward = 0
+                reward = 1
             self.done = True
         else:
             # make move
@@ -38,8 +38,10 @@ class Env:
         # game over
         if self.board.is_game_over(claim_draw=True):
             if turn: # white won
+                print("White wins!")
                 reward = 9999
             else: # black won
+                print("Black wins!")
                 reward = -9999
             self.done = True
 

@@ -6,7 +6,7 @@ from Env import Env
 
 def main():
     env = Env()
-    agent = Agent(env.state.shape, env.output_dimensions)
+    agent = Agent(env.state.shape, env.output_dimensions, model_path="./model3999")
 
     episodes = 100000
     render_period = 50
@@ -67,12 +67,11 @@ def main():
                 agent.epsilon *= agent.epsilon_decay
                 agent.epsilon = max(agent.epsilon, agent.min_epsilon)
         episode_rewards.append(episode_reward)
-        """
-        if render and (episode % render_period == 0):
-            print(f"episode: {episode} reward: {episode_reward}")
-        if episode_reward >= 3:
-            agent.model.save(f"./model{episode}_{episode_reward}")
-        """
+        if env.board.fullmove_number >= 20 and agent.epsilon < 0.7:
+            agent.model.save(f"./model{episode}move{env.board.fullmove_number}")
+        if episode % 1000 == 0:
+            agent.model.save(f"./model{episode}autosave")
+
 
 if __name__ == "__main__":
     main()
